@@ -3,7 +3,7 @@
 /******************************************************/
 
 #include "Particle.h"
-#line 1 "/Users/amdevito/Documents/cart360/sonicHands/src/UDP_ARGON_2020.ino"
+#line 1 "/Users/amdevito/Documents/GitHub/360/cart360/sonicHands/src/UDP_ARGON_2020.ino"
 /*
  * Project UDP_ARGON_2020
  * Description:
@@ -22,9 +22,9 @@ void flexSensor();
 void flexSensor2();
 void ldr();
 void dof();
-#line 10 "/Users/amdevito/Documents/cart360/sonicHands/src/UDP_ARGON_2020.ino"
+#line 10 "/Users/amdevito/Documents/GitHub/360/cart360/sonicHands/src/UDP_ARGON_2020.ino"
 SYSTEM_THREAD(ENABLED);
-/* HOW TO CONNECT TO WiFi & INTERNET: AUTOMATIC, SEMI_AUTOMATIC, MANUAL */
+/* HOW TO CONNECT TO WiFi & INTERNET: AUTOMATIC, SEMI_AUTOMATIC, MANUAL */  
 SYSTEM_MODE(SEMI_AUTOMATIC);
 
 /* IF USING MAX-MSP - THEN THIS */
@@ -382,11 +382,11 @@ void setup() {
 
  drv.selectLibrary(1);
 
-//configure which kind of vibrations to use: set to different variables for differnt options? for now assign differnt vibes for differnt frequencies.
-  drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
-  drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
-  drv.setWaveform(2, 0);  // end of waveforms
-  //end of driver motor set up
+// //configure which kind of vibrations to use: set to different variables for differnt options? for now assign differnt vibes for differnt frequencies.
+//   drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
+//   drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
+//   drv.setWaveform(2, 0);  // end of waveforms
+//   //end of driver motor set up
 }
 
 
@@ -406,12 +406,12 @@ void loop() {
   Z_out = ( Wire.read() | Wire.read() << 8); // z-axis value
   Z_out = Z_out/256;
 
-  Serial.print("Xa= ");
-  Serial.print(X_out);
-  Serial.print("   Ya= ");
-  Serial.print(Y_out);
-  Serial.print("   Za= ");
-  Serial.println(Z_out);
+  // Serial.print("Xa= ");
+  // Serial.print(X_out);
+  // Serial.print("   Ya= ");
+  // Serial.print(Y_out);
+  // Serial.print("   Za= ");
+  // Serial.println(Z_out);
 
 accelerometer();
 
@@ -428,21 +428,28 @@ accelerometer();
 //read flexSensor Data
 //  int flexValue;
  flexValue = analogRead(flexPin);
- Serial.print("sensor: ");
- Serial.println(flexValue);
+//  Serial.print("sensor: ");
+//  Serial.println(flexValue);
 
   flexValue2 = analogRead(flexPin2);
- Serial.print("sensor2: ");
- Serial.println(flexValue2);
+//  Serial.print("sensor2: ");
+//  Serial.println(flexValue2);
 
  flexSensor();
  flexSensor2();
 
-
+//IS THIS WHAT WE NEED TO ACTIVATE DRIVER?
     //call the driver
-    // drv.go();
-    // delay(1000);
+//     drv.selectLibrary(1);
 
+// //configure which kind of vibrations to use: set to different variables for differnt options? for now assign differnt vibes for differnt frequencies.
+//   drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
+//   drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
+//   drv.setWaveform(2, 0); 
+   
+//     drv.go();
+//     delay(1000);
+// // Serial.println("post drive go");
 
   // OSCMessage outMessage("/flexSensor");
   // //outMessage.addFloat(-3.14);
@@ -453,7 +460,7 @@ accelerometer();
   // outMessage.addFloat(random(0, 4096));
 
   // /* CHECK IF THERE IS SOME DATA IN UDP FORMAT */
-  //  oooesscee();
+   oooesscee();
 
   // OSCMessage outMessage("/accelerometer");
   // outMessage.addFloat(-3.14);
@@ -483,13 +490,50 @@ void led(OSCMessage &inMessage) {
 }
 
 void motor(OSCMessage &inMessage) {
-    Serial.println("MOTOR");
-    Serial.println(inMessage.getInt(0));
-    Serial.println(inMessage.getInt(1));
+    // Serial.println("MOTOR");
 
-    //activate motor? //fyi these two lines worked when 'loose' in loop - can make a variable that takes the frequency from the max and tells the vibe to happen at certian times.
+    Serial.print("MOTOR: ");
+
+    Serial.println(inMessage.getInt(0));
+    // Serial.println(inMessage.getInt(1));
+
+//  drv.selectLibrary(1);
+
+switch (inMessage.getInt(0))  {
+  case 1:
+    // drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
+    // drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
+    // drv.setWaveform(2, 0); 
+  break;
+  case 2:
+  
+    drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
+    drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
+    drv.setWaveform(2, 0); 
     drv.go();
     delay(1000);
+  break;
+  case 3:
+    // drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
+    // drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
+    // drv.setWaveform(2, 0); 
+  break;
+}
+
+// //configure which kind of vibrations to use: set to different variables for differnt options? for now assign differnt vibes for differnt frequencies.
+//   drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
+//   drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
+//   drv.setWaveform(2, 0); 
+
+    
+// Serial.println("post dr
+    
+
+    //activate motor? //fyi these two lines worked when 'loose' in loop - can make a variable that takes the frequency from the max and tells the vibe to happen at certian times.
+    // drv.go();
+    // delay(1000);
+
+    
 
     /* SENT DATA BACK TO SENDER */
     dof();

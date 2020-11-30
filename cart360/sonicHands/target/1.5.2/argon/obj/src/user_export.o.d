@@ -1,4 +1,4 @@
-/Users/amdevito/Documents/cart360/sonicHands/target/1.5.2/argon//obj/./src/user_export.o: \
+/Users/amdevito/Documents/GitHub/360/cart360/sonicHands/target/1.5.2/argon//obj/./src/user_export.o: \
  src/user_export.c \
  ../../../modules/shared/nRF52840/inc/user_part_export.c \
  ../../../modules/shared/nRF52840/inc/module_user_init.h \
