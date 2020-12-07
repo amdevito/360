@@ -29,7 +29,9 @@ ADXL345 accel;
 
 int ADXL345 = 0x53;  //ADXL345 sensor I2C address
 
-float X_out, Y_out, Z_out; 
+float X_out;
+float Y_out;
+float Z_out; 
 
 //flexSensor1 variables
 const int flexPin = A0;
@@ -69,9 +71,10 @@ unsigned int localPort = 8888;
 // A UDP instance to let us send and receive packets over UDP
 UDP Udp;
 IPAddress argonIP;
-IPAddress remoteIP(192,168,1,107);
+IPAddress remoteIP(192,168,1,112);
 char argonIPAddress[24];
 // 192,168,1,107 (studio)//192,168,0,103 (home)
+//(studio again?) 192.168.1.112
 
 //IPAddress outIP(192, 168, 0, 14);
 IPAddress senderAddress;
@@ -390,12 +393,12 @@ void loop() {
   Z_out = ( Wire.read() | Wire.read() << 8); // z-axis value
   Z_out = Z_out/256;
 
-  // Serial.print("Xa= ");
-  // Serial.print(X_out);
-  // Serial.print("   Ya= ");
-  // Serial.print(Y_out);
-  // Serial.print("   Za= ");
-  // Serial.println(Z_out);
+  Serial.print("Xa= ");
+  Serial.print(X_out);
+  Serial.print("   Ya= ");
+  Serial.print(Y_out);
+  Serial.print("   Za= ");
+  Serial.println(Z_out);
 
 accelerometer();
 
@@ -412,12 +415,12 @@ accelerometer();
 //read flexSensor Data
 //  int flexValue;
  flexValue = analogRead(flexPin);
-//  Serial.print("sensor: ");
-//  Serial.println(flexValue);
+ Serial.print("sensor: ");
+ Serial.println(flexValue);
 
   flexValue2 = analogRead(flexPin2);
-//  Serial.print("sensor2: ");
-//  Serial.println(flexValue2);
+ Serial.print("sensor2: ");
+ Serial.println(flexValue2);
 
  flexSensor();
  flexSensor2();
@@ -484,23 +487,39 @@ void motor(OSCMessage &inMessage) {
 //  drv.selectLibrary(1);
 
 switch (inMessage.getInt(0))  {
-  case 1:
-    // drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
-    // drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
-    // drv.setWaveform(2, 0); 
-  break;
-  case 2:
-  
-    drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
-    drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
-    drv.setWaveform(2, 0); 
+  case 1:// low freq
+    drv.setWaveform(0, 7);  // in the 1st sequence slot (0) Soft Bump- 100%
+    drv.setWaveform(1, 52);  // in the 2nd sequence slot (1), PulsingStrong1 – 100%
+    drv.setWaveform(2, 7);  // in the 3rd sequence slot (2) Soft Bump- 100%
+    drv.setWaveform(3, 52);  // in the 4th sequence slot (3), PulsingStrong1 – 100%
+    drv.setWaveform(4, 71);  // in the 5th sequence slot (4), TransitionRampDownLongSmooth2 –100 to 0%
+    drv.setWaveform(5, 0); // sets a 0 in the 6th slot of the waveform sequencer, indicating the end of the effect sequence. 8 slots available total.
     drv.go();
-    delay(1000);
+    delay(50);
   break;
-  case 3:
-    // drv.setWaveform(0, 84);  // ramp up medium 1, see datasheet part 11.2
-    // drv.setWaveform(1, 1);  // strong click 100%, see datasheet part 11.2
-    // drv.setWaveform(2, 0); 
+  case 2:// mid freq
+  
+    drv.setWaveform(0, 83);  // TransitionRampUp LongSmooth2 – 0 to 100%
+    drv.setWaveform(1, 74);  // TransitionRampDownShortSmooth1 –100 to 0%
+    drv.setWaveform(2, 83);  // TransitionRampUp LongSmooth2 – 0 to 100%
+    drv.setWaveform(3, 74);  // TransitionRampDownShortSmooth1 –100 to 0%
+    drv.setWaveform(4, 83);  // TransitionRampUp LongSmooth2 – 0 to 100%
+    drv.setWaveform(5, 74);  // TransitionRampDownShortSmooth1 –100 to 0%
+    drv.setWaveform(6, 0); 
+    drv.go();
+    delay(50);
+  break;
+  case 3: //hi freq
+    drv.setWaveform(0, 34);  // ShortDoubleSharpTick 1 – 100%
+    drv.setWaveform(1, 27);  // ShortDoubleClickStrong1 – 100%
+    drv.setWaveform(2, 56); //PulsingSharp1 – 100%
+    drv.setWaveform(3, 52); //PulsingStrong1 – 100%
+    drv.setWaveform(4, 34);  // ShortDoubleSharpTick 1 – 100%
+    drv.setWaveform(5, 27);  // ShortDoubleClickStrong1 – 100%
+    drv.setWaveform(6, 12);  // TripleClick- 100%
+    drv.setWaveform(7, 0); //end
+     drv.go();
+    delay(50);
   break;
 }
 
@@ -564,7 +583,7 @@ void oooesscee() {
   //   Serial.println(c);
   //   /* CAPTURE SENDERS IP ADDRESS */
   //   // IPAddress ipAddress = Udp.remoteIP();
-  //   senderAddress = Udp.remoteIP();
+  //   senderAddress = Udp.remote ();
   //   int port = Udp.remotePort();
 
   //   Serial.println(senderAddress);
